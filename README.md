@@ -1,10 +1,24 @@
-# bootloader
-Basic x86 bootloader
+## CadenOS Bootloader
+Basic 16-bit x86 bootloader and minimalist shell environment.
 
-# To-do
-1. Take in user input and enter
-2. allow calling of pre-made functions
+## Project Description
+A minimalist 16-bit x86 bootloader and "micro-kernel" written in Assembly. It initializes a stack, sets up memory segments, and provides a basic command-line interface (CLI) environment. The system utilizes BIOS interrupts to interact with the user via a persistent input loop.
 
+## To-do 
+- Memory buffer for characters
+- String comparison
+- Command Execution
+- More Sectors
+
+## Goals
+- Proficiency with Assembly
+- Simple text editor + file system
+- Eventually turn into mini-kernel 
+
+## Stretch Goals 
+- Number 1 most used kernel in the world
+- Solve world hunger
+- Found intergalatic empire focusing on human supremacy
 
 ## Resources
 
