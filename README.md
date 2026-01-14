@@ -1,11 +1,16 @@
 ## CadenOS Bootloader
-Basic 16-bit x86 bootloader and minimalist shell environment.
+Basic 16-bit x86 bootloader.
 
 ## Project Description
-A minimalist 16-bit x86 bootloader and "micro-kernel" written in Assembly. It initializes a stack, sets up memory segments, and provides a basic command-line interface (CLI) environment. The system utilizes BIOS interrupts to interact with the user via a persistent input loop.
+A minimalist 16-bit x86 bootloader written in Assembly. 
 
-## To-do 
-- work through both of the books listed, attempting to understand concepts and write them in code
+## To-do
+- load more sectors into memory
+- lift from 16 bit real mode to 32 bit protected mode
+- upgrade from assembly to C 
+
+## Work Process
+Currently, I set some time aside to work on this project by engaging with the two book resources I listed. I try to implement their challenges while turning their example code into my own. 
 
 ## Goals
 - Proficiency with Assembly
