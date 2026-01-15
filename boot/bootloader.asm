@@ -1,35 +1,40 @@
 [BITS 16]
+[ORG 0x7c00]
 
 section .text
     global _start
 
 _start:
-	mov ax, 0x07C0		; Set up 4K stack space after this bootloader
-	add ax, 288		; (4096 + 512) / 16 bytes per paragraph
-	mov ss, ax
-	mov sp, 4096
+    mov [BOOT_DRIVE], dl 
+    
+    mov bp, 0x8000
+    mov sp, bp 
 
-	mov ax, 0x07C0		; Set data segment to where we're loaded
-	mov ds, ax
+    mov bx, 0x9000
+    mov dh, 5
+    mov dl, [BOOT_DRIVE] 
+    call disk_load
 
 .print_welcome:
-	mov si, text_welcome_string	; Put string position into SI
-	call print_string	; Call our string-printing routine
+	mov si, text_welcome_string	    ; Put string position into SI
+	call print_string	            ; Call print 
 
     jmp main
 	 
 main: 
 .repeat:
     call print_console
-    call newline_and_carriage_ret
     call get_keystroke
     jmp .repeat
 	   
 
-text_welcome_string db 'Welcome to CadenBoot!', 0
 
 %include "boot/print.asm"
+%include "boot/disk.asm"
+
+BOOT_DRIVE: db 0 
+
+text_welcome_string db 'Welcome to CadenBoot!', 0
 
 times 510-($-$$) db 0	; Pad remainder of boot sector with 0s
-dw 0xAA55		; The standard PC boot signature
-
+dw 0xAA55		        ; The standard PC boot signature
