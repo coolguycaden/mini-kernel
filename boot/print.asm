@@ -75,91 +75,73 @@ print_string:
 
 ; Print 16-bit value stored in DX as hex to screen 
 print_hex:
-    
-    push bp         ; Save caller stackframe  
-    mov bp, sp      ; set stack up 
-    
-    sub sp, 5       ; allocate 5 bytes for stack 
-                    ; 4 bytes for the 4 characters from DX   - [rbp - 4] : [rbp - 1] 
-                    ; 1 byte to hold calculated shift amount - [rbp - 5]
-    
+   mov si, HEXA_PREFIX
+   call print_string 
 
-
-    mov cl, 4 		; Number of times to loop  
-    
+  
+   mov cl, 4
+   mov [LOOP_AMOUNT], cl
 
 .repeat:
+        
 
-	cmp cl, 1  		; check if loop is finished 
-	jl .done
-    
-    sub cl, 1       ; decrement counter 
+    mov cl, [LOOP_AMOUNT]
+    cmp cl, 1 
+    jl .done 
+
+    ; decrement loop count and store it 
+    sub cl, 1            
+    mov [LOOP_AMOUNT], cl 
 
     ; shift amount (AL) = counter * 4
     ; pattern = 12, 8, 4, 0
     mov al, 4
     mul cl 
+    mov cl, al
     
-    mov si, bp      
-    sub si, 5       ; calculate offset to access our "shift amount" variable on the stack 
-    mov [si], al    ; move calculated shift amount into correct address on stack 
-    
-    
-    push cx         
-    mov ax, dx       
-    mov cl, [si]    ; store calculated shift into cl 
-    shr ax, cl      ; shift ax right by cl 
-    pop cx          
+    mov ax, dx    ; take copy of data (DX) into AX 
+    shr ax, cl    ; shift copy data right by CL
 
     ; AND bottom 4 bits of AX to get the value of the nibble 
     and ax, 0x0F
     
     ; easy hack to turn numbers into their ASCII equivalent using a known ASCII value
+    ; so just jump to handle 0-9, and a-f (10-15)
     cmp ax, 9 
-    jl .zero_through_nine
+    jle .zero_through_nine
     jmp .ten_through_fiften
 
    
 .zero_through_nine:
-    ; values zero through nine can be turned into ASCII 
+    ; values 0-9 can be turned into ASCII 
     ; just by adding the ASCII of '0'
-    
     add ax, '0'
     
-    jmp .save_value
+    jmp .char_to_screen
 
 .ten_through_fiften:
-    ; values zero through nine can be turned into ASCII 
-    ; just by adding the ASCII of 'A' (you can also change it to 'a') 
-    add ax, 'A'
+    ; values 10-15 can be turned into ASCII 
+    ; just by adding 55 (10 + 55 = 65 = 'A') 
+    add ax, 55 
      
+    
+    jmp .char_to_screen
 
-    jmp .save_value
-
-.save_value:
-    mov di, bp      ; copy BP offset to DI 
-    sub di, cx      ; subtract DI from counter to get next index to store  
-                    ; ASCII character that was just calculated
-
-   
-    mov [di], ax    ; save ASCII character in the 4-byte array that was created 
+.char_to_screen: 
+    
+    ; print_char takes character input as AL
+    ; char is already loaded into AX, so call routine  
+    call print_char    
     jmp .repeat  
 
 
 .done: 
-
-    mov si, HEXA_PREFIX
-    call print_string 
     
-    sub di, 3       ; substract 3 from DI to print entire 4-byte array = BP - 3
-    mov si, di      ; load DI into SI to be printed 
-    call print_string 
-    
-    pop bp
     ret 
     
-    HEX_OUT db "done", 0
-    HEXA_PREFIX db "0x", 0 
+    HEXA_PREFIX: db "0x", 0 
+    SHIFT_AMOUNT: db 0 
+    LOOP_AMOUNT: db 0 
 
 text_newline_character db 10, 0
 text_carriage_ret_character db 13, 0
