@@ -2,7 +2,7 @@
 target remote localhost:1234
 
 # Load the kernel symbols 
-symbol-file staging/kernel.o
+symbol-file staging/kernel.elf
 
 # Set a breakpoint at the very start of the bootloader (0x7c00)
 break *0x7c00

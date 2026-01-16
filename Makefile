@@ -56,7 +56,7 @@ $(BUILD_DIR)/%.o: %.c
 $(KERNEL_BIN): $(ALL_KERNEL_OBJS)
 	ld -o $@ $(LD_FLAGS) $(ALL_KERNEL_OBJS)
 
-# Assemble bootloader binary
+# Assemble bootloader into binary 
 $(BOOTLOADER_BIN): $(BOOTLOADER_ASM)
 	nasm $< -f bin -o $@ 
 
@@ -78,19 +78,27 @@ $(BOOT_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 # UTILS
 # -----------------------------------
 
+# KERNEL.ELF for DEBUGGING 
+$(BUILD_DIR)/kernel.elf: $(ALL_KERNEL_OBJS)
+	ld -o $@ -Ttext 0x1000 -m elf_i386 $(ALL_KERNEL_OBJS)
 
-dump:
-	objdump -b binary -m i386 -D $(BOOTLOADER_BIN) > $(BUILD_DIR)/boot.dump
+
+kernel_dump:
 	objdump -b binary -m i386 -D $(KERNEL_BIN) > $(BUILD_DIR)/kernel.dump
+	vim $(BUILD_DIR)/kernel.dump
+
+boot_dump:
+	objdump -b binary -m i386 -D $(BOOTLOADER_BIN) > $(BUILD_DIR)/boot.dump
+	vim $(BUILD_DIR)/boot.dump
 
 run:
 	qemu-system-x86_64 -boot a -fda $(BOOT_IMAGE)
 
-debug_start: $(BOOT_IMAGE)	
+debug_start: $(BOOT_IMAGE)	$(BUILD_DIR)/kernel.elf
 	qemu-system-x86_64 -s -S -boot a -fda $(BOOT_IMAGE) 
 
 debug_connect: 
-	gdb -x debug/debug.gdb
+	gdb --tui -x debug/kernel.gdb
 
 clean:
 	rm -rf $(BUILD_DIR)/*
