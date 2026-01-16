@@ -6,4 +6,4 @@ section .text
 
 _start:
 	call main 
-	jmp _start
+	jmp $
