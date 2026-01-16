@@ -15,12 +15,17 @@
 // Manage screen offset 
 int get_screen_offset(int col, int row);
 int get_cursor();
-void set_cursor();
 int handle_scrolling(int offset);
+void set_cursor(int offset);
 
 // Printing functions 
 void print_char(char character, int col, int row, char attributes);
 void print_at(char * string, int col, int row);
 void print(char * string);
+void print_hex(unsigned char value); 
+
+// Scrolling 
+int handle_scrolling(int cursor_offset);
+void clear_screen();
 
 #endif

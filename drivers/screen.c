@@ -1,5 +1,6 @@
 #include "include/screen.h"
 #include "../kernel/include/low_level.h"
+#include "../kernel/include/util.h"
 
 // Get the offset required to print at a row-col combination on screen 
 int get_screen_offset(int col, int row) {
@@ -46,6 +47,7 @@ int get_cursor() {
     return offset * 2;     
 }
 
+// set cursor at provided offset 
 void set_cursor(int offset) {
     
     // Convert from cell offset to char offset 
@@ -64,8 +66,45 @@ void set_cursor(int offset) {
 }
 
 
-int handle_scrolling(int offset) {
-    return offset; 
+int handle_scrolling(int cursor_offset) {
+
+	// If cursor is on the screen, no need to modify it
+	if(cursor_offset < MAX_ROWS * MAX_COLS * 2) {
+		return cursor_offset; 
+	}
+
+	// Move all rows up one
+	for(int x = 0; x < MAX_ROWS; x++) {
+		memory_copy(get_screen_offset(0, x) + VIDEO_ADDRESS,
+					get_screen_offset(0, x - 1) + VIDEO_ADDRESS,
+					MAX_COLS * 2
+				);
+	}
+
+	char * last_line = get_screen_offset(0, MAX_ROWS - 1) + VIDEO_ADDRESS; 
+	for(int x = 0; x < MAX_COLS * 2; x++) {
+		last_line[x] = 0;
+
+	}
+
+	cursor_offset -= MAX_COLS * 2;
+
+	return cursor_offset;
+}
+
+
+
+// In the name, clear the screen 
+void clear_screen() {
+
+	for(int row = 0; row < MAX_ROWS; row++) {
+		
+		for(int col = 0; col < MAX_COLS; col++) {
+			print_char(' ', col, row, WHITE_ON_BLACK);
+		}
+	}
+
+	set_cursor(get_screen_offset(0, 0));
 }
 
 // Print a char on the screen at col, row, or at cursor position
