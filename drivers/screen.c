@@ -1,6 +1,4 @@
 #include "include/screen.h"
-#include "../kernel/include/low_level.h"
-#include "../kernel/include/util.h"
 
 // Get the offset required to print at a row-col combination on screen 
 int get_screen_offset(int col, int row) {
