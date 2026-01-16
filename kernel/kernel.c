@@ -1,36 +1,16 @@
-#define WHITE_ON_BLACK 0x0F 
+#include "../drivers/include/screen.h"
 
 // 0xb8000 begins video memory 
 char * video_address = (char *) 0xb8000;
 
-// Prints string to screen, does NOT auto scroll
-// prints to same location on the screen
-void print_string(char * string) {
-	
-	char * video_memory = video_address;
-	
-	// Continue until we find null-termiantor 
-	while(*string != 0) {
+int cursor_offset = 0; 
 
-		// Each video cell is a sequence of two bytes:
-		// [Character] and [Attribute]
-		// So first, load the char into the cell 
-		*video_memory = *string;
 
-		// Now, load in the attribute for the char 
-		// with "WHITE_ON_BLACK" attribute 
-		*(video_memory + 1) = WHITE_ON_BLACK;
 
-		// go to next char 
-		string++;
-
-		// go to next CELL in video memory 
-		video_memory += 2; 
-		
-	}	
-}
-
-void test() {
+// This function solely exists as a dump marker, 
+// so I can know where functions are relative to this function
+// when I am looking at the disassembly
+void dump_marker() {
 	int h1 = 0xabab;
 	int h2 = 0xcdcd;
 	int h3 = 0xdada; 
@@ -38,13 +18,9 @@ void test() {
 }
 
 int main() {
-	char * string = "Hello, World!";
-	print_string(string);
-	
-	char * video_memory = (char *) 0xb8000;
-	*video_memory = 'X';
+    print_char('h', 0, 0, 0); 
 
-	return 0;
+    return 0;
 }
 
 
