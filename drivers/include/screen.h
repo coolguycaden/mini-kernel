@@ -12,6 +12,15 @@
 #define REG_SCREEN_CTRL 0x3D4
 #define REG_SCREEN_DATA 0x3D5
 
+// Manage screen offset 
+int get_screen_offset(int col, int row);
+int get_cursor();
+void set_cursor();
+int handle_scrolling(int offset);
+
+// Printing functions 
 void print_char(char character, int col, int row, char attributes);
+void print_at(char * string, int col, int row);
+void print(char * string);
 
 #endif
