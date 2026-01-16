@@ -12,7 +12,7 @@ void dump_marker() {
 
 int main() {
     print("Hello, Kernel!");
-    return 0;
+	return 0;
 }
 
 
