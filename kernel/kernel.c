@@ -11,7 +11,8 @@ void dump_marker() {
 }
 
 int main() {
-    print("Hello, Kernel!");
+    //print("Hello, Kernel!");
+	print_hex(0xa2345678);
 	return 0;
 }
 

@@ -22,7 +22,7 @@ void set_cursor(int offset);
 void print_char(char character, int col, int row, char attributes);
 void print_at(char * string, int col, int row);
 void print(char * string);
-void print_hex(unsigned char value); 
+void print_hex(unsigned int value);
 
 // Scrolling 
 int handle_scrolling(int cursor_offset);

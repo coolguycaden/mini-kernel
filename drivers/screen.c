@@ -175,3 +175,47 @@ void print_at(char * string, int col, int row) {
 void print(char * string) {
     print_at(string, -1, -1);
 }
+
+// Print 32-bit number as hexadecimal 
+void print_hex(unsigned int value) {
+
+	for(int x = 7; x >= 0; x--) {
+		
+		// Simple loop: 
+		// we shift the top 4 bits right until they are the 
+		// bottom 4 bits 
+		char hex_character = value >> (x * 4); 
+	
+		// Then, we AND the bottom 4 bits and 
+		// 0x0F so we can select ONLY those 4 bits
+		hex_character &= 0x0F; 
+
+		// Now, we have a value from 0 - 15 (hex)
+		// we can use an ASCII trick to get the character for
+		// any hex value 
+		//
+		// Example: We take the value 0 and add the ASCII of 
+		// '0' (48), we get 48 = '0', the char equivalent 
+		// 
+		// The same applies to 9 - 15 (a - f), but we add 55
+		// so that 10 + 55 = 65, which is 'A' 
+		if(hex_character <= 9) {
+			hex_character += '0';
+		} else {
+			hex_character += 55;
+		}
+
+		print_char(hex_character, -1, -1, WHITE_ON_BLACK);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
