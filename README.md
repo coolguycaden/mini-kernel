@@ -1,21 +1,41 @@
 ## CadenOS Bootloader
-Basic 16-bit x86 bootloader.
+A custom x86 bootloader and mini-kernel built from scratch.
 
 ## Project Description
-A minimalist 16-bit x86 bootloader written in Assembly. 
+A minimalist 16-bit x86 bootloader written in NASM Assembly that transitions into a 32-bit Protected Mode C kernel. The project currently boots from a simulated floppy disk, loads the kernel from disk to memory, sets up the Global Descriptor Table (GDT), and executes C code capable of direct VGA memory manipulation.
+
+## Current Status
+- **Bootloader**: Functional. Boots from MBR, loads kernel from disk, switches to 32-bit Protected Mode.
+- **Kernel**: Minimal C kernel entry point established.
+- **Build System**: Automated `Make` pipeline with QEMU emulation and GDB debugging support.
 
 ## To-do
-- load more sectors into memory
-- lift from 16 bit real mode to 32 bit protected mode
-- upgrade from assembly to C 
+### Completed
+- [x] Boot from disk (Master Boot Record)
+- [x] Load sectors from disk to memory
+- [x] Implement 16-bit BIOS string and hex printing
+- [x] Configure Global Descriptor Table (GDT)
+- [x] Lift from 16-bit Real Mode to 32-bit Protected Mode
+- [x] Hand off control from Assembly to C Kernel
 
-## Work Process
-Currently, I set some time aside to work on this project by engaging with the two book resources I listed. I try to implement their challenges while turning their example code into my own. 
+### In Progress / Next Steps
+- [ ] **VGA Driver**:
+    - [ ] Implement cursor handling (hardware ports)
+    - [ ] Implement screen scrolling
+    - [ ] Full `printf` style support for the kernel
+- [ ] **Input Driver**:
+    - [ ] Write PS/2 Keyboard driver (scancode handling)
+    - [ ] Create a keyboard buffer/queue
+- [ ] **Kernel Utils**:
+    - [ ] `memcpy`, `memset`, and memory helper functions
+    - [ ] String manipulation (`strlen`, `strcmp`, `strcpy`)
+- [ ] **Interrupts**:
+    - [ ] Set up the Interrupt Descriptor Table (IDT)
+    - [ ] Remap the PIC (Programmable Interrupt Controller)
 
 ## Goals
-- Proficiency with Assembly
-- Simple text editor + file system
-- Eventually turn into mini-kernel 
+- Proficiency with Assembly and Low-level Architecture 
+- Simple text editor + filesystem
 
 ## Stretch Goals 
 - Number 1 most used kernel in the world
