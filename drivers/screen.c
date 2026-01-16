@@ -64,10 +64,10 @@ void set_cursor(int offset) {
 }
 
 
-int handle_scrolling(offset) {
-    offset = 0;
+int handle_scrolling(int offset) {
     return offset; 
 }
+
 // Print a char on the screen at col, row, or at cursor position
 void print_char(char character, int col, int row, char attributes) {
     
@@ -117,7 +117,22 @@ void print_char(char character, int col, int row, char attributes) {
 }
 
 // Print string to screen starting at col, row 
-void print_string(char * string, int col, int row, char * attributes) {
-   
-   
+void print_at(char * string, int col, int row) {
+    
+    // Update cursor if col and row are NOT negative
+    if(col >= 0 && row >= 0) {
+        set_cursor(get_screen_offset(col, row));
+    }
+
+    // Loop through string and print each char 
+    int x = 0;
+    while(string[x] != 0) {
+         
+        print_char(string[x++], col, row, WHITE_ON_BLACK); 
+    }
+}
+
+// Basic print function, just pass string 
+void print(char * string) {
+    print_at(string, -1, -1);
 }
