@@ -1,4 +1,5 @@
-#include "../drivers/include/screen.h"
+extern void print(char * string); 
+extern void print_hex(unsigned int value); 
 
 // This function solely exists as a dump marker, 
 // so I can know where functions are relative to this function
@@ -11,9 +12,11 @@ void dump_marker() {
 }
 
 int main() {
-    //print("Hello, Kernel!");
-	print_hex(0xa2345678);
-	return 0;
+    print("Hello, Kernel!");
+	print_hex(0xa2345678);	
+    
+
+    return 0;
 }
 
 

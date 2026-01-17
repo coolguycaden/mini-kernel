@@ -18,8 +18,17 @@ BOOT_IMAGE     = $(BUILD_DIR)/os_image.img
 
 # KERNEL DEFINES 
 KERNEL_ENTRY_ASM = $(KERNEL_DIR)/asm/kernel_entry.asm
-KERNEL_ENTRY_OBJ = $(BUILD_DIR)/kernel_entry.o
-KERNEL_BIN 		 = $(BUILD_DIR)/kernel.bin
+KERNEL_ENTRY_ASM_OBJ = $(BUILD_DIR)/kernel_entry.o
+
+# Find every .asm file in the directory
+# Then, remove the KERNEL_ENTRY_ASM from that list because it MUST be linked first 
+# Finally, create objects for all asms BESIDES kernel_entry.o 
+KERNEL_ALL_ASM     		= $(wildcard $(KERNEL_DIR)/asm/*.asm)
+KERNEL_OTHER_ASM   		= $(filter-out $(KERNEL_ENTRY_ASM), $(KERNEL_ALL_ASM))
+KERNEL_OTHER_ASM_OBJS   = $(patsubst $(KERNEL_DIR)/asm/%.asm, $(BUILD_DIR)/%.o, $(KERNEL_OTHER_ASM))
+
+KERNEL_BIN       = $(BUILD_DIR)/kernel.bin
+
 
 # Find all kernel and driver .c files 
 C_SOURCES = $(wildcard $(KERNEL_DIR)/*.c $(DRIVER_DIR)/*.c)  
@@ -30,7 +39,7 @@ C_OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(C_SOURCES)))
 
 # Important that `kernel_entry.o` is first,
 # it is in the name after all 
-ALL_KERNEL_OBJS = $(KERNEL_ENTRY_OBJ) $(C_OBJS)
+ALL_KERNEL_OBJS = $(KERNEL_ENTRY_ASM_OBJ) $(KERNEL_OTHER_ASM_OBJ) $(C_OBJS)
 
 # Tell Make where to look for .c files 
 vpath %.c $(KERNEL_DIR) $(DRIVER_DIR)
@@ -42,15 +51,20 @@ vpath %.c $(KERNEL_DIR) $(DRIVER_DIR)
 
 all: $(BOOT_IMAGE) run 
 
-# Compile kernel_entry.asm -> .o 
-$(KERNEL_ENTRY_OBJ): $(KERNEL_ENTRY_ASM)
+# Compile kernel .asm files -> .o 
+$(KERNEL_ASM_OBJ): $(KERNEL_ASM)
 	# make $(BUILD_DIR) if it does not exist 
 	@mkdir -p $(BUILD_DIR)
-	nasm $^ -f elf -o $@
+	nasm $< -f elf -o $@
 
 # Compile .c -> .o
 $(BUILD_DIR)/%.o: %.c
 	$(CXX) $(COMPILE_FLAGS) -c $< -o $@ 
+
+# Compile .asm -> .o
+$(BUILD_DIR)/%.o: $(KERNEL_DIR)/asm/%.asm
+	@mkdir -p $(BUILD_DIR)
+	nasm $< -f elf -o $@
 
 # Link everything together 
 $(KERNEL_BIN): $(ALL_KERNEL_OBJS)
@@ -106,3 +120,4 @@ clean:
 debug_vars:
 	@echo "Source Files: $(C_SOURCES)"
 	@echo "Object Files: $(C_OBJS)"
+	@echo "ASMs: $(KERNEL_ASM)"
