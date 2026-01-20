@@ -1,5 +1,4 @@
-extern void print(char * string); 
-extern void print_hex(unsigned int value); 
+#include "include/system.h"
 
 // This function solely exists as a dump marker, 
 // so I can know where functions are relative to this function
@@ -12,7 +11,8 @@ void dump_marker() {
 }
 
 int main() {
-    print("Hello, Kernel!");
+    clear_screen();  
+    print("Hello, Kernel!\n");
 	print_hex(0xa2345678);	
     
 

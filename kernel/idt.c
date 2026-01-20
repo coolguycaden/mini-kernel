@@ -1,5 +1,4 @@
-extern void idt_load();
-extern void memory_set(char * dest, int value, int count);
+#include "include/system.h"
 
 // Interrupt Descriptor Entry, necessary to setup and handle interrupts
 // this is the 32-bit version 
@@ -14,7 +13,6 @@ struct IDTEntry32 {
 // present: 1 bit, is segment present?
 // DPL: 3 bits, Descriptior Privilege Level
 // always: 5 bits = 01110 
-
 
 struct IDTPtr {
     unsigned short limit;

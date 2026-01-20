@@ -28,11 +28,4 @@ void print_hex(unsigned int value);
 int handle_scrolling(int cursor_offset);
 void clear_screen();
 
-
-
-extern unsigned char port_byte_read(unsigned short port);
-extern void port_byte_write(unsigned short port, unsigned char data);
-
-extern void memory_copy(char * source, char * dest, int byte_amount); 
-
 #endif
