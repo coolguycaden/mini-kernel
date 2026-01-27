@@ -11,24 +11,17 @@ A minimalist 16-bit x86 bootloader written in NASM Assembly that transitions int
 
 ## To-do
 ### Completed
-- [x] Boot from disk (Master Boot Record)
-- [x] Load sectors from disk to memory
-- [x] Implement 16-bit BIOS string and hex printing
-- [x] Configure Global Descriptor Table (GDT)
-- [x] Lift from 16-bit Real Mode to 32-bit Protected Mode
-- [x] Hand off control from Assembly to C Kernel
+- [x] Boot from disk, raise from 16-bit to 32-bit mode 
+- [x] Load C Kernel into memory
+- [x] Basic screen printing, scrolling
+- [x] Basic kernel utils (`memcpy`, `memset`, etc)
 
 ### In Progress / Next Steps
 - [ ] **VGA Driver**:
-    - [ ] Implement cursor handling (hardware ports)
-    - [ ] Implement screen scrolling
     - [ ] Full `printf` style support for the kernel
 - [ ] **Input Driver**:
     - [ ] Write PS/2 Keyboard driver (scancode handling)
     - [ ] Create a keyboard buffer/queue
-- [ ] **Kernel Utils**:
-    - [ ] `memcpy`, `memset`, and memory helper functions
-    - [ ] String manipulation (`strlen`, `strcmp`, `strcpy`)
 - [ ] **Interrupts**:
     - [ ] Set up the Interrupt Descriptor Table (IDT)
     - [ ] Remap the PIC (Programmable Interrupt Controller)
