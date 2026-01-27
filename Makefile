@@ -14,6 +14,8 @@ LD_FLAGS 	  = -Ttext 0x1000 --oformat binary -m elf_i386
 # BOOTLOADER DEFINES 
 BOOTLOADER_ASM = $(BOOT_DIR)/bootloader.asm 
 BOOTLOADER_BIN = $(BUILD_DIR)/bootloader.bin
+BOOTLOADER_OBJ = $(BUILD_DIR)/bootloader.o
+BOOTLOADER_ELF = $(BUILD_DIR)/bootloader.elf
 BOOT_IMAGE     = $(BUILD_DIR)/os_image.img
 
 # KERNEL DEFINES 
@@ -34,14 +36,13 @@ KERNEL_BIN       = $(BUILD_DIR)/kernel.bin
 C_SOURCES = $(wildcard $(KERNEL_DIR)/*.c $(DRIVER_DIR)/*.c)  
 
 # Find all kernel and driver .o files
-# .o files are stored in $(BUILD_DIR), so we look there 
 C_OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(C_SOURCES)))
 
-# Important that `kernel_entry.o` is first,
-# it is in the name after all 
+# KERNEL_ENTRY_ASM must be first in order to keep our kernel entry function
+# in a static position 
 ALL_KERNEL_OBJS = $(KERNEL_ENTRY_ASM_OBJ) $(KERNEL_OTHER_ASM_OBJ) $(C_OBJS)
 
-# Tell Make where to look for .c files 
+# Where to look for .c files 
 vpath %.c $(KERNEL_DIR) $(DRIVER_DIR)
 
 
@@ -66,13 +67,24 @@ $(BUILD_DIR)/%.o: $(KERNEL_DIR)/asm/%.asm
 	@mkdir -p $(BUILD_DIR)
 	nasm $< -f elf -o $@
 
-# Link everything together 
+# Link all kernel code together 
 $(KERNEL_BIN): $(ALL_KERNEL_OBJS)
 	ld -o $@ $(LD_FLAGS) $(ALL_KERNEL_OBJS)
 
-# Assemble bootloader into binary 
-$(BOOTLOADER_BIN): $(BOOTLOADER_ASM)
-	nasm $< -f bin -o $@ 
+# bootloader.asm -> .o 
+$(BOOTLOADER_OBJ): $(BOOTLOADER_ASM)
+	@mkdir -p $(BUILD_DIR)
+	nasm $< -f elf -o $@
+
+# Link bootloader.o and .elf, set start address to 
+# 0x7C00 (code entry)
+$(BOOTLOADER_ELF): $(BOOTLOADER_OBJ)
+	ld -o $@ -Ttext 0x7c00 -m elf_i386 $<
+
+# bootloader.elf -> .bin
+$(BOOTLOADER_BIN): $(BOOTLOADER_ELF)
+	objcopy -O binary $< $@
+
 
 # Create boot image 
 $(BOOT_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
