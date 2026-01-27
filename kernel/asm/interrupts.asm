@@ -1,57 +1,54 @@
-global isr0
-global isr1
-global isr2
-global isr3
-global isr4
-global isr5
-global isr6
-global isr7
-global isr8
-global isr9
-global isr10
-global isr11
-global isr12
-global isr13
-global isr14
-global isr15
-global isr16
-global isr17
-global isr18
-global isr19
-global isr20
-global isr21
-global isr22
-global isr23
-global isr24
-global isr25
-global isr26
-global isr27
-global isr28
-global isr29
-global isr30
-global isr31
+; Define a macro that takes one argument (%1)
+%macro ISR_NOERRCODE 1
+  global isr%1
+  isr%1:
+      cli
 
-; Divide By Zero Exception 
-isr0:
-    cli 
-    push byte 0     ; push dummy error code to 
-                    ; keep stack uniform 
+      ; Push dummy error code 
+      push byte 0
 
-    push byte 0 
-    jmp isr_common_stub 
+      push byte %1
+      jmp isr_common_stub
+%endmacro
 
-; Debug Exception 
-isr1:
-    cli 
-    push byte 0 
-    push byte 1 
-    jmp isr_common_stub
+; Define a macro for ISRs that already push an error code (8, 10-14, etc.)
+%macro ISR_ERRCODE 1
+  global isr%1
+  isr%1:
+      cli
+      
+      ; No dummy error code push needed here
+      push byte %1
+      jmp isr_common_stub
+%endmacro
 
-; Non Maskable Interrupt Exception 
-isr1:
-    cli 
-    push byte 0 
-    push byte 2
-    jmp isr_common_stub
+; ISR WITH NO ErrCodes 
+ISR_NOERRCODE 0     ; Divide Error 
+ISR_NOERRCODE 1     ; Debug Exception
+ISR_NOERRCODE 2     ; NMI interrupt 
+ISR_NOERRCODE 3     ; Breakpoint
+ISR_NOERRCODE 4     ; Overflow 
+ISR_NOERRCODE 5     ; BOUND range exceeded 
+ISR_NOERRCODE 6     ; Invalid opcode 
+ISR_NOERRCODE 7     ; Device not available 
+ISR_NOERRCODE 9     ; Coprocessor segment overrun 
+ISR_NOERRCODE 16    ; x87 FPU Flopating Point Error 
+ISR_NOERRCODE 18    ; Machine Check 
+ISR_NOERRCODE 19    ; SIMD Floating Point Exception 
+ISR_NOERRCODE 20    ; Virtualization Exception
 
 
+
+; ISRs WITH ErrCodes 
+ISR_ERRCODE 8
+ISR_ERRCODE 10
+ISR_ERRCODE 11
+ISR_ERRCODE 12
+ISR_ERRCODE 13
+ISR_ERRCODE 14
+ISR_ERRCODE 17
+ISR_ERRCODE 21
+
+
+; Common stub, saves processor state, sets up for 
+isr_common_stub: 
