@@ -6,19 +6,21 @@
 
       ; Push dummy error code 
       push byte 0
+	  push byte %1
 
-      push byte %1
+
       jmp isr_common_stub
 %endmacro
 
-; Define a macro for ISRs that already push an error code (8, 10-14, etc.)
+; Define a macro for ISRs that already push an error code
 %macro ISR_ERRCODE 1
   global isr%1
   isr%1:
       cli
       
-      ; No dummy error code push needed here
+      ; No dummy error code push needed
       push byte %1
+
       jmp isr_common_stub
 %endmacro
 
@@ -37,18 +39,65 @@ ISR_NOERRCODE 18    ; Machine Check
 ISR_NOERRCODE 19    ; SIMD Floating Point Exception 
 ISR_NOERRCODE 20    ; Virtualization Exception
 
-
-
 ; ISRs WITH ErrCodes 
-ISR_ERRCODE 8
-ISR_ERRCODE 10
-ISR_ERRCODE 11
-ISR_ERRCODE 12
-ISR_ERRCODE 13
-ISR_ERRCODE 14
-ISR_ERRCODE 17
-ISR_ERRCODE 21
+ISR_ERRCODE 8 		; Double Fault 
+ISR_ERRCODE 10 		; Invalid TSS 
+ISR_ERRCODE 11 		; Segment Not Present 
+ISR_ERRCODE 12  	; Stack-Segment Fault 
+ISR_ERRCODE 13 		; General Protection 
+ISR_ERRCODE 14 		; Page Fault 
+ISR_ERRCODE 17 		; Alignment check 
+ISR_ERRCODE 21 		; Control Protection Exception 
+
+; Reserved ISRs
+ISR_NOERRCODE 15 	; Reserved 
+ISR_NOERRCODE 22 	; Reserved 
+ISR_NOERRCODE 23 	; Reserved 
+ISR_NOERRCODE 24 	; Reserved 
+ISR_NOERRCODE 25 	; Reserved 
+ISR_NOERRCODE 26 	; Reserved 
+ISR_NOERRCODE 27 	; Reserved 
+ISR_NOERRCODE 28 	; Reserved 
+ISR_NOERRCODE 29 	; Reserved 
+ISR_NOERRCODE 30 	; Reserved 
+ISR_NOERRCODE 31 	; Reserved 
+
+
+
+
+
+; Define C function to handle faults 
+extern fault_handler
 
 
 ; Common stub, saves processor state, sets up for 
 isr_common_stub: 
+	pusha 		; save registers to stack	
+
+	push ds  	; save segments to stack 
+	push es 
+	push fs 
+	push gs 
+
+	mov ax, 0x10  	; Load Kernel Data Segment descriptor
+	mov ds, ax
+	mov es, ax 
+	mov fs, ax 
+	mov gs, ax 
+
+	mov eax, esp  	; push the stack pointer 
+	push eax
+
+	mov eax, fault_handler
+	call eax 		; special call that preserves the `eip` register
+
+	pop eax 
+	pop gs 
+	pop fs 
+	pop es 
+	pop ds 
+	popa 
+
+	add esp, 8 		; Clean the pushed error code and ISR number 
+	
+	iret 

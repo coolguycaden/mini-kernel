@@ -14,6 +14,16 @@ extern void port_word_write(unsigned short port, unsigned short data);
 
 // idt.c externs
 extern void idt_set_gate(unsigned char num, unsigned long base, unsigned short selector, unsigned char flags);
+extern void idt_setup();
+
+// isrc.c externs 
+//extern void isr_setup(); 
+
+/***************************
+ *
+ * Driver Externs 
+ *
+ **************************/ 
 
 // screen.c externs 
 extern void print_char(char character, int col, int row, char attributes);

@@ -1,5 +1,8 @@
 #include "include/system.h"
 
+extern void idt_load(); 
+extern void isr_setup(); 
+
 // Interrupt Descriptor Entry, necessary to setup and handle interrupts
 // this is the 32-bit version 
 struct IDTEntry32 {
@@ -11,13 +14,18 @@ struct IDTEntry32 {
 };
 // FLAGS, bits 0 - 7, left to right 
 // present: 1 bit, is segment present?
-// DPL: 3 bits, Descriptior Privilege Level
+// DPL: 3 bits, Descriptor Privilege Level
 // always: 5 bits = 01110 
+
+
+
 
 struct IDTPtr {
     unsigned short limit;
     unsigned int base; 
 } __attribute__((packed)); 
+
+
 
 // There are 256 interrupt entries available,
 // of which 0-31 are reserved 
@@ -37,12 +45,14 @@ void idt_set_gate(unsigned char num, unsigned long base, unsigned short selector
     idt[num].zero     = 0;
 }
 
-void idt_install() {
+void idt_setup() {
     
     idt_pointer.limit = (sizeof (struct IDTEntry32) * 256) - 1;
     idt_pointer.base  = &idt_pointer;
 
     memory_set(&idt, 0, sizeof(struct IDTEntry32) * 256); 
+	
+	isr_setup();
+
+	idt_load(); 
 }
-
-
