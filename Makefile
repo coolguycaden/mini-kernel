@@ -31,7 +31,6 @@ KERNEL_OTHER_ASM_OBJS   = $(patsubst $(KERNEL_DIR)/asm/%.asm, $(BUILD_DIR)/%.o, 
 
 KERNEL_BIN       = $(BUILD_DIR)/kernel.bin
 
-
 # Find all kernel and driver .c files 
 C_SOURCES = $(wildcard $(KERNEL_DIR)/*.c $(DRIVER_DIR)/*.c)  
 
@@ -40,11 +39,10 @@ C_OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(notdir $(C_SOURCES)))
 
 # KERNEL_ENTRY_ASM must be first in order to keep our kernel entry function
 # in a static position 
-ALL_KERNEL_OBJS = $(KERNEL_ENTRY_ASM_OBJ) $(KERNEL_OTHER_ASM_OBJ) $(C_OBJS)
+ALL_KERNEL_OBJS = $(KERNEL_ENTRY_ASM_OBJ) $(KERNEL_OTHER_ASM_OBJS) $(C_OBJS)
 
 # Where to look for .c files 
 vpath %.c $(KERNEL_DIR) $(DRIVER_DIR)
-
 
 # -----------------------------------
 # TARGETS
@@ -66,6 +64,10 @@ $(BUILD_DIR)/%.o: %.c
 $(BUILD_DIR)/%.o: $(KERNEL_DIR)/asm/%.asm
 	@mkdir -p $(BUILD_DIR)
 	nasm $< -f elf -o $@
+
+# Kernel .o -> .elf  
+$(BUILD_DIR)/kernel.elf: $(ALL_KERNEL_OBJS)
+	ld -o $@ -Ttext 0x1000 -m elf_i386 $(ALL_KERNEL_OBJS)
 
 # Link all kernel code together 
 $(KERNEL_BIN): $(ALL_KERNEL_OBJS)
@@ -103,11 +105,6 @@ $(BOOT_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 # -----------------------------------
 # UTILS
 # -----------------------------------
-
-# KERNEL.ELF for DEBUGGING 
-$(BUILD_DIR)/kernel.elf: $(ALL_KERNEL_OBJS)
-	ld -o $@ -Ttext 0x1000 -m elf_i386 $(ALL_KERNEL_OBJS)
-
 
 kernel_dump:
 	objdump -b binary -m i386 -D $(KERNEL_BIN) > $(BUILD_DIR)/kernel.dump
