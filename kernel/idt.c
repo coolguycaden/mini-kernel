@@ -34,21 +34,21 @@ struct IDTPtr idt_pointer;
 
 void idt_set_gate(unsigned char num, unsigned long base, unsigned short selector, unsigned char flags) {
 
-    // Split provided base into low and high bytes 
-    unsigned char base_high = (base >> 8) & 0xFF; 
-    unsigned char base_low  = base & 0xFF; 
-
+    unsigned short base_high = (base >> 16) & 0xFFFF;
+    unsigned short base_low  = base & 0xFFFF; 
+	
     idt[num].base_high_bits = base_high;
     idt[num].base_low_bits  = base_low;
     idt[num].selector = selector;
     idt[num].flags    = flags; 
     idt[num].zero     = 0;
+
 }
 
 void idt_setup() {
     
     idt_pointer.limit = (sizeof (struct IDTEntry32) * 256) - 1;
-    idt_pointer.base  = &idt_pointer;
+    idt_pointer.base  = &idt;
 
     memory_set(&idt, 0, sizeof(struct IDTEntry32) * 256); 
 	

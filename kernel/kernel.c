@@ -13,12 +13,12 @@ void dump_marker() {
 int main() {
     clear_screen();  
     print("Hello, Kernel!\n");
-	print_hex(0xa2345678);		
-	idt_setup();	
-	//isr_setup();
-	//int x = 0;
-	//x /= 0;
-
+	print_hex(0xa2345678);			
+	
+	// Setup the IDT 
+	idt_setup();
+	
+	int x = 0 / 0;
 
     return 0;
 }

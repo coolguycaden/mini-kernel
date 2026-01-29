@@ -137,7 +137,8 @@ void fault_handler(struct InterruptStackFrame * stack) {
 	
 	// fault from defined 0 - 31 for now 
 	if (stack->interrupt_num < 32) {
-		print(&exception_messages[stack->interrupt_num]);
+		print("\n");
+		print(exception_messages[stack->interrupt_num]);
 		print(" Exception. Halt!\n");
 		while(1);
 	}

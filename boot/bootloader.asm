@@ -29,8 +29,8 @@ load_kernel:
 	mov si, WELCOME_LOADING_KERNEL
 	call print_string 
 
-	mov bx, KERNEL_OFFSET 	; Load first 15 sectors after boot sector
-	mov dh, 15 				; to the ADDRESS at KERNEL_OFFSET 
+	mov bx, KERNEL_OFFSET 	; Load first 31 sectors after boot sector
+	mov dh, 31 				; to the ADDRESS at KERNEL_OFFSET 
 	mov dl, [BOOT_DRIVE]
 	call disk_load 
 
