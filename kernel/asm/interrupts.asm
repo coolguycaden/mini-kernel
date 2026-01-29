@@ -1,3 +1,9 @@
+; interrupts.asm 
+; Uses macros to define the first 32 defined Intel faults
+; Sets so that each fault jumps to `isr_common_stub` which will setup
+; stack so a C function `fault_handler` can parse the fault
+
+
 ; Define a macro that takes one argument (%1)
 %macro ISR_NOERRCODE 1
   global isr%1
@@ -88,10 +94,11 @@ isr_common_stub:
 	mov eax, esp  	; push the stack pointer 
 	push eax
 
+	; call the C defined fault handler function 
 	mov eax, fault_handler
 	call eax 		; special call that preserves the `eip` register
 
-	pop eax 
+	pop eax  		; pop off stack in reverse order 
 	pop gs 
 	pop fs 
 	pop es 

@@ -6,7 +6,8 @@
 // lower 5 bits must be '14'    -> 1110
 #define ISR_ACCESS_FLAGS 0x8E
 
-
+// Not sure how to do this a better way, so I will keep it like this for now
+// Extern all the isrs that are defined in ASM in kernel/asm/interrupts.asm 
 extern void isr0(); 
 extern void isr1(); 
 extern void isr2(); 
@@ -41,6 +42,7 @@ extern void isr30();
 extern void isr31(); 
 
 
+// Messages for the first 32 Intel defined faults 
 const char * exception_messages [] = {
 	"Division By Zero", 
 	"Debug", 
@@ -93,7 +95,8 @@ struct InterruptStackFrame {
 	unsigned int eip, cs, eflags, user_esp, ss; 
 };
 
-
+// Also not sure how to do this function better, 
+// but simply sets the Intel defined faults (first 32 faults) to their respective implementations
 void isr_setup() {
 	idt_set_gate(0, (unsigned) isr0, 0x08, ISR_ACCESS_FLAGS);
 	idt_set_gate(1, (unsigned) isr1, 0x08, ISR_ACCESS_FLAGS);
@@ -132,7 +135,7 @@ void isr_setup() {
 
 }
 
-
+// Simple, when a fault is detected, print the message associated with that fault 
 void fault_handler(struct InterruptStackFrame * stack) {
 	
 	// fault from defined 0 - 31 for now 

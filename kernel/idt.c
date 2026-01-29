@@ -19,7 +19,8 @@ struct IDTEntry32 {
 
 
 
-
+// The struct necessary to pass to `lidt` to load the 
+// described IDT 
 struct IDTPtr {
     unsigned short limit;
     unsigned int base; 
@@ -32,6 +33,8 @@ struct IDTPtr {
 struct IDTEntry32 idt[256]; 
 struct IDTPtr idt_pointer; 
 
+// Function that sets the interrupt at index `num` (0 indexed) to given address to execute when that
+// interrupt is called 
 void idt_set_gate(unsigned char num, unsigned long base, unsigned short selector, unsigned char flags) {
 
     unsigned short base_high = (base >> 16) & 0xFFFF;
@@ -45,14 +48,19 @@ void idt_set_gate(unsigned char num, unsigned long base, unsigned short selector
 
 }
 
+// Basic setup of the IDT, including setting the ISRs for the 32 defined Intel faults
 void idt_setup() {
     
+	// Set to contain the entire `idt` array 
     idt_pointer.limit = (sizeof (struct IDTEntry32) * 256) - 1;
     idt_pointer.base  = &idt;
 
+	// Ensure idt is empty (0) 
     memory_set(&idt, 0, sizeof(struct IDTEntry32) * 256); 
 	
+	// Basic implementation to setup each ISR for the 32 defined Intel faults 
 	isr_setup();
 
+	// Go to defined ASM function to utilize `lidt` to update the IDT 
 	idt_load(); 
 }

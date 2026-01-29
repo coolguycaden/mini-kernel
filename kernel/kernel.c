@@ -18,6 +18,7 @@ int main() {
 	// Setup the IDT 
 	idt_setup();
 	
+	// Test exception handling 
 	int x = 0 / 0;
 
     return 0;
