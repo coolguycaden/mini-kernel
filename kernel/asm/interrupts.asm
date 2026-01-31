@@ -40,10 +40,10 @@ ISR_NOERRCODE 5     ; BOUND range exceeded
 ISR_NOERRCODE 6     ; Invalid opcode 
 ISR_NOERRCODE 7     ; Device not available 
 ISR_NOERRCODE 9     ; Coprocessor segment overrun 
-ISR_NOERRCODE 16    ; x87 FPU Flopating Point Error 
+ISR_NOERRCODE 16    ; x87 FPU Floating Point Error 
 ISR_NOERRCODE 18    ; Machine Check 
 ISR_NOERRCODE 19    ; SIMD Floating Point Exception 
-ISR_NOERRCODE 20    ; Virtualization Exception
+ISR_NOERRCODE 20    ; Virtualization Exception 
 
 ; ISRs WITH ErrCodes 
 ISR_ERRCODE 8 		; Double Fault 
@@ -69,6 +69,16 @@ ISR_NOERRCODE 30 	; Reserved
 ISR_NOERRCODE 31 	; Reserved 
 
 
+; Software-defined interrupts, placeholders until C function gives them usage 
+ISR_NOERRCODE 32    ; Placeholder 
+ISR_NOERRCODE 33    ; Placeholder  
+ISR_NOERRCODE 34    ; Placeholder
+ISR_NOERRCODE 35    ; Placeholder
+ISR_NOERRCODE 36    ; Placeholder
+ISR_NOERRCODE 37    ; Placeholder
+ISR_NOERRCODE 38    ; Placeholder
+ISR_NOERRCODE 39    ; Placeholder
+ISR_NOERRCODE 40    ; Placeholder
 
 
 
