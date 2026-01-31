@@ -1,63 +1,8 @@
 #include "include/system.h"
+#include "include/isrs.h"
 
-// Look at `FLAGS` defined in `idt.c` 
-// Explanation:
-// present = 1, ring level = 0, -> 1000 
-// lower 5 bits must be '14'    -> 1110
-#define ISR_ACCESS_FLAGS 0x8E
-
-#define KERNEL_SELECTOR 0x08
-
-// Not sure how to do this a better way, so I will keep it like this for now
-// Extern all the isrs that are defined in ASM in kernel/asm/interrupts.asm
-// INTEL DEFINED INTERRUPTS 
-extern void isr0(); 
-extern void isr1(); 
-extern void isr2(); 
-extern void isr3(); 
-extern void isr4(); 
-extern void isr5(); 
-extern void isr6(); 
-extern void isr7(); 
-extern void isr8(); 
-extern void isr9(); 
-extern void isr10(); 
-extern void isr11(); 
-extern void isr12(); 
-extern void isr13(); 
-extern void isr14(); 
-extern void isr15(); 
-extern void isr16(); 
-extern void isr17(); 
-extern void isr18(); 
-extern void isr19(); 
-extern void isr20(); 
-extern void isr21(); 
-extern void isr22(); 
-extern void isr23(); 
-extern void isr24(); 
-extern void isr25(); 
-extern void isr26(); 
-extern void isr27(); 
-extern void isr28(); 
-extern void isr29(); 
-extern void isr30(); 
-extern void isr31(); 
-
-// Software defined interrupts 
-extern void isr32(); 
-extern void isr33(); 
-extern void isr34(); 
-extern void isr35(); 
-extern void isr36(); 
-extern void isr37(); 
-extern void isr38(); 
-extern void isr39(); 
-extern void isr40(); 
-
-
-// Messages for the first 32 Intel defined faults 
-const char * intel_exception_messages [] = {
+// Messages for the first 32 Intel defined isrs 
+const char * isr_messages [] = {
 	"Division By Zero", 
 	"Debug", 
 	"Non Maskable Interrupt", 
@@ -93,90 +38,92 @@ const char * intel_exception_messages [] = {
 }; 
 
 
+// INTEL DEFINED ISRS
+extern void isr0(); 
+extern void isr1(); 
+extern void isr2(); 
+extern void isr3(); 
+extern void isr4(); 
+extern void isr5(); 
+extern void isr6(); 
+extern void isr7(); 
+extern void isr8(); 
+extern void isr9(); 
+extern void isr10(); 
+extern void isr11(); 
+extern void isr12(); 
+extern void isr13(); 
+extern void isr14(); 
+extern void isr15(); 
+extern void isr16(); 
+extern void isr17(); 
+extern void isr18(); 
+extern void isr19(); 
+extern void isr20(); 
+extern void isr21(); 
+extern void isr22(); 
+extern void isr23(); 
+extern void isr24(); 
+extern void isr25(); 
+extern void isr26(); 
+extern void isr27(); 
+extern void isr28(); 
+extern void isr29(); 
+extern void isr30(); 
+extern void isr31(); 
 
-// What the stackframe looks like after ISR was run 
-struct InterruptStackFrame {
-	// Segments pushed onto stack 
-	unsigned int gs, fs, es, ds;
 
-	// Pushed by `pusha` 
-	unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eas;  
 
-	// Pushed onto stack by `push byte` and error code 
-	unsigned int interrupt_num, err_code; 
 
-	// processor automatically pushes this 
-	unsigned int eip, cs, eflags, user_esp, ss; 
-};
 
 // Not sure how to do this function better, 
-// but simply sets the Intel defined faults (first 32 faults) to their respective implementations
-void intel_isr_setup() {
-	idt_set_gate(0, (unsigned) isr0, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(1, (unsigned) isr1, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(2, (unsigned) isr2, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(3, (unsigned) isr3, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(4, (unsigned) isr4, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(5, (unsigned) isr5, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(6, (unsigned) isr6, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(7, (unsigned) isr7, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(8, (unsigned) isr8, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(9, (unsigned) isr9, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-
-	idt_set_gate(10, (unsigned) isr10, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(11, (unsigned) isr11, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(12, (unsigned) isr12, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(13, (unsigned) isr13, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(14, (unsigned) isr14, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(15, (unsigned) isr15, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(16, (unsigned) isr16, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(17, (unsigned) isr17, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(18, (unsigned) isr18, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(19, (unsigned) isr19, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(20, (unsigned) isr20, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-
-	idt_set_gate(21, (unsigned) isr21, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(22, (unsigned) isr22, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(23, (unsigned) isr23, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(24, (unsigned) isr24, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(25, (unsigned) isr25, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(26, (unsigned) isr26, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(27, (unsigned) isr27, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(28, (unsigned) isr28, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(29, (unsigned) isr29, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(30, (unsigned) isr30, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-	idt_set_gate(31, (unsigned) isr31, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-
-
-}
-
-// Same problem as above function, not sure how to make this more efficient
-// This function sets any software up, starting at INT 32 (first interrupt after Intel's 32 defined interrupts) 
-void software_isr_setup() {
-	idt_set_gate(32, (unsigned) isr32, KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
-}
-
-// Sets up both Intel's defined ISRs and software-defined ISRs 
+// but simply sets the Intel defined isrs (first 32 isrs) to their respective implementations
 void isr_setup() {
-	intel_isr_setup();
-	software_isr_setup();
+	idt_set_gate(0, (unsigned) isr0, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(1, (unsigned) isr1, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(2, (unsigned) isr2, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(3, (unsigned) isr3, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(4, (unsigned) isr4, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(5, (unsigned) isr5, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(6, (unsigned) isr6, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(7, (unsigned) isr7, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(8, (unsigned) isr8, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(9, (unsigned) isr9, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+
+	idt_set_gate(10, (unsigned) isr10, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(11, (unsigned) isr11, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(12, (unsigned) isr12, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(13, (unsigned) isr13, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(14, (unsigned) isr14, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(15, (unsigned) isr15, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(16, (unsigned) isr16, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(17, (unsigned) isr17, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(18, (unsigned) isr18, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(19, (unsigned) isr19, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(20, (unsigned) isr20, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+
+	idt_set_gate(21, (unsigned) isr21, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(22, (unsigned) isr22, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(23, (unsigned) isr23, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(24, (unsigned) isr24, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(25, (unsigned) isr25, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(26, (unsigned) isr26, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(27, (unsigned) isr27, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(28, (unsigned) isr28, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(29, (unsigned) isr29, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(30, (unsigned) isr30, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
+	idt_set_gate(31, (unsigned) isr31, ISR_KERNEL_SELECTOR, ISR_ACCESS_FLAGS);
 }
 
-// Simple, when a fault is detected, print the message associated with that fault 
-void fault_handler(struct InterruptStackFrame * stack) {
-	
-	// Intel defined fault handling  
+// Simple, when a isr is detected, print the message associated with that fault 
+void isr_handler(struct InterruptStackFrame * stack) {
+
+	// Intel defined isr handling  
 	if (stack->interrupt_num < 32) {
 		print("\n");
-		print(intel_exception_messages[stack->interrupt_num]);
-		print(" Exception. Halt!\n");
+		print(isr_messages[stack->interrupt_num]);
+		print(" Exception.\n");
 		while(1);
 	} 
-	else if (stack->interrupt_num <= 40) {
-		// Handle software defined faults 
-		
-		
-	}
-
-		
+   		
 }

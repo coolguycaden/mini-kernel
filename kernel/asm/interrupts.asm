@@ -82,8 +82,8 @@ ISR_NOERRCODE 40    ; Placeholder
 
 
 
-; Define C function to handle faults 
-extern fault_handler
+; Define C function to handle ISRs
+extern isr_handler
 
 
 ; Common stub, saves processor state, sets up for 
@@ -105,7 +105,7 @@ isr_common_stub:
 	push eax
 
 	; call the C defined fault handler function 
-	mov eax, fault_handler
+	mov eax, isr_handler
 	call eax 		; special call that preserves the `eip` register
 
 	pop eax  		; pop off stack in reverse order 
