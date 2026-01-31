@@ -34,3 +34,10 @@ void port_word_write(unsigned short port, unsigned short data) {
 
     __asm__("out %%ax, %%dx" : : "a" (data), "d" (port));  
 }
+
+// Simple delay for IO operations
+inline void io_wait() {
+	
+	// Just do random IO operation on unused port 
+	port_byte_write(0x80, 0);
+}
