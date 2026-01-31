@@ -15,11 +15,14 @@ int main() {
     print("Hello, Kernel!\n");
 	print_hex(0xa2345678);			
 	
-	// Setup the IDT 
-	idt_setup();
-	
-	// Test exception handling 
-	int x = 0 / 0;
+    idt_setup();
+    irq_setup();
+    keyboard_setup();
+    
+
+    while(1) {
+    
+    }
 
     return 0;
 }

@@ -17,7 +17,17 @@ extern void io_wait();
 extern void idt_set_gate(unsigned char num, unsigned long base, unsigned short selector, unsigned char flags);
 extern void idt_setup();
 
-// pic.c  
+// isrs.c externs
+extern void isr_setup();
+
+// irq.c externs
+extern void irq_setup();
+
+// pic.c
+extern void pic_setup();
+extern void pic_send_eoi(unsigned char irq);
+
+
 
 /***************************
  *
@@ -32,6 +42,7 @@ extern void print(char * string);
 extern void print_hex(unsigned int value);
 extern void clear_screen();
 
-
+// keyboard.c externs 
+extern void keyboard_setup();
 
 #endif
