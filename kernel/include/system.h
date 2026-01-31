@@ -11,14 +11,13 @@ extern unsigned char port_byte_read(unsigned short port);
 extern void port_byte_write(unsigned short port, unsigned char data);
 extern unsigned short port_word_read(unsigned short port);
 extern void port_word_write(unsigned short port, unsigned short data);
-extern inline void io_wait();
+extern void io_wait();
 
 // idt.c externs
 extern void idt_set_gate(unsigned char num, unsigned long base, unsigned short selector, unsigned char flags);
 extern void idt_setup();
 
-// isrc.c externs 
-//extern void isr_setup(); 
+// pic.c  
 
 /***************************
  *
