@@ -5,6 +5,8 @@
 extern void memory_copy(char * source, char * dest, int byte_amount);
 extern void memory_set(char * dest, char value, int count);
 extern void memory_set_word(short * dest, short value, int count);
+extern unsigned char is_alpha(unsigned char character);
+extern unsigned char is_num(unsigned char character);
 
 // low_level.c externs 
 extern unsigned char port_byte_read(unsigned short port);

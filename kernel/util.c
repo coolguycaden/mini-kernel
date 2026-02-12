@@ -33,3 +33,30 @@ int str_len(const char * str) {
 
     return length;
 }
+
+// return 1 if alphabet, 0 if not  
+unsigned char is_alpha(unsigned char character) {
+	
+	// simple ascii comparison:
+	// a-z is 97 - 122
+	// A-Z is 65 - 90 
+	if(character < 65 || character > 122 ) {
+		return 0; 
+	} else if(character > 90 && character < 97) {
+		return 0;
+	}
+
+	return 1; 
+}
+
+// return 1 if number, 0 if not 
+unsigned char is_num(unsigned char character) {
+
+	// simple ascii:
+	// 0-9 is 48 - 57
+	if(character < 48 || character > 57) {
+		return 0;
+	}
+
+	return 1;
+}
