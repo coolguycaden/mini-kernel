@@ -69,28 +69,60 @@ const unsigned char Keyboard_US[128] = {
 };
 
 
+unsigned char keyboard_is_special_char(unsigned char character) {
+	
+	return 0;
+}
+
+// steps for logic:
+// read scancode
+// if special character (! caps 
+
 void keyboard_isr(struct InterruptStackFrame * stack){
 
     // read scancode 
     unsigned char scancode = 0; 
     scancode = port_byte_read(KEYBOARD_DATA_READ);
 
-    if(scancode & KEYBOARD_KEY_RELEASED) {
-        
-        // remove bit manually so we can easily determine char value 
-        scancode &= ~(KEYBOARD_KEY_RELEASED);
+	if(scancode & KEYBOARD_KEY_RELEASED) {
 
-        // TODO: handle release of special keys 
-        switch(scancode) {
-            default: 
-                break; 
-        }
-     } else {
-         // key was released, print it 
-         print("pressed");
-         print_char(Keyboard_US[scancode], -1, -1, 0);
-     }
+		// remove bit manually so we can easily determine char value 
+		scancode &= ~(KEYBOARD_KEY_RELEASED);
+
+		// TODO: handle release of special keys 
+		switch(scancode) {
+			
+			// left and right shift key 
+			case 42: case 54:
+				keyboard_status.shift_key = ~keyboard_status.shift_key;
+				break; 
+
+			// caps lock 
+			case 48:
+				keyboard_status.caps_lock = ~keyboard_status.caps_lock; 
+				break; 
+			
+			default: 
+				break; 
+		}
+	} else {
+		unsigned char character = Keyboard_US[scancode];
+
+		// if caps lock or shift key, capitalize letter 
+		if(keyboard_status.caps_lock | keyboard_status.shift_key) {
+			// Dirty ASCII hack: subtract 32 from a lower case letter
+			// to get its upper case equivalent
+			character -= 32;
+		}
+
+
+		// key was released AND printable, print it 
+		print_char(character, -1, -1, 0);
+	}
 }
+
+
+
 
 void keyboard_setup() {
     irq_register_handler(KEYBOARD_INTERRUPT_VECTOR, keyboard_isr);    

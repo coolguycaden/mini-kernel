@@ -1,6 +1,8 @@
 #include "include/screen.h"
 #include "../kernel/include/system.h"
 
+#define TAB_SPACE_AMOUNT 4 
+
 // Get the offset required to print at a row-col combination on screen 
 int get_screen_offset(int col, int row) {
 
@@ -130,12 +132,33 @@ void print_char(char character, int col, int row, char attributes) {
     
     // If we see a newline character, set offset to the end of
     // current row, so it will be advanced to the first col
-    // of the next row .
+    // of the next row . 
     if(character == '\n') {
-
+		
         int rows = offset / (2 * MAX_COLS); 
         offset = get_screen_offset(79, rows);
-    } else {
+    } else if(character == '\b') {
+		
+		// handle backspace character
+		// go back a space and remove character 
+		
+		offset = get_cursor() - 2; 
+		video_memory[offset] = ' ';
+		video_memory[offset + 1] = attributes;
+		set_cursor(offset);
+		return; 
+
+	} else if(character == '\t') {
+			
+		// handle tab character 
+		// for now, print 4 spaces
+		for(unsigned char x = 0; x < TAB_SPACE_AMOUNT; x++) {
+			video_memory[offset] = ' ';
+			video_memory[offset + 1] = attributes; 
+			offset += 2; 
+		}
+	
+	} else {
         
         // Else, write character and attributes to video memory 
         // at calculated offset 

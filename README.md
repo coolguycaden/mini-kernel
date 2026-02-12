@@ -18,11 +18,11 @@ The kernel features direct VGA memory manipulation, a fully functional Interrupt
 - [x] Basic kernel utils (`memcpy`, `memset`, etc)
 - [x] Setup Interrupt Descriptor Table 
 - [x] Remap'd PIC 
-
+- [x] Implement basic keyboard driver 
 
 ### In Progress / Next Steps
-- [ ] **Input Driver**:
-    - [ ] Implement Scancode ASCII translation 
+- [x] **Input Driver**:
+    - [x] Implement Scancode ASCII translation 
     - [ ] Create a keyboard ring buffer/queue
     - [ ] Handle key release and modifier keys (Shift/Ctrl)
 - [ ] Shell / Interaction:

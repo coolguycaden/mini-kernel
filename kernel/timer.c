@@ -12,7 +12,7 @@ void timer_handler(struct InterruptStackFrame * stack) {
     
     // 18 ticks is a second 
     if (timer_ticks % 18) {
-        print("A second has passed\n");
+        //print("A second has passed\n");
     }
 }
 
