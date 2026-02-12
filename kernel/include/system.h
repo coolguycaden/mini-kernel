@@ -23,11 +23,16 @@ extern void isr_setup();
 // irq.c externs
 extern void irq_setup();
 
-// pic.c
+// pic.c externs 
 extern void pic_setup();
 extern void pic_send_eoi(unsigned char irq);
 
+// pit.c externs
+void pit_setup_rate_generator(int clock_hz); 
 
+// timer.c externs 
+extern void timer_setup();
+#define SYSTEM_TIMER_DEFAULT_HZ 100
 
 /***************************
  *

@@ -21,5 +21,9 @@
 // and IBM standard show that keyboard will pull IRQ 1
 // and we set the interrupt offset ot 0x20, thus our offset is
 // 0x21
-#define KEYBOARD_INTERRUPT_VECTOR 0x21
+#define KEYBOARD_INTERRUPT_VECTOR 0x01
+
+// Top bit of byte from KEYBOARD_DATA_READ
+// determines if key was released 
+#define KEYBOARD_KEY_RELEASED 0x80
 #endif 

@@ -2,11 +2,94 @@
 #include "include/keyboard.h"
 #include "../kernel/include/isrs.h"
 
+
+struct KeyboardStatus {
+    unsigned char alt_key : 1;
+    unsigned char control_key : 1; 
+    unsigned char shift_key : 1;
+    unsigned char caps_lock : 1; 
+    unsigned char num_lock : 1;
+    unsigned char scroll_lock : 1; 
+    unsigned char unused : 2; 
+} __attribute__((packed));
+
+struct KeyboardStatus keyboard_status = {
+    .alt_key = 0,
+    .control_key = 0,
+    .shift_key = 0,
+    .caps_lock = 0,
+    .num_lock = 0, 
+    .scroll_lock = 0,
+    .unused = 0,
+};
+
+const unsigned char Keyboard_US[128] = {
+    0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	
+    '9', '0', '-', '=', 
+    '\b', // backspace 
+    '\t',  // tab 
+    'q', 'w', 'e', 'r',	
+    't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
+    '\n', // enter 
+    0,	   // ctrl 
+    'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
+    '\'', '`',   
+    0,	// left shift 
+    '\\', 'z', 'x', 'c', 'v', 'b', 'n',	
+    'm', ',', '.', '/',   
+    0, // right shift 		
+    '*',
+    0,	// alt 
+    ' ', // space bar 
+    0,	// caps lock 
+    
+    // F1 - 59 
+    0,	0,   0,   0,   0,   0,   0,   0,   0,
+    0,	// F10 
+    0,	// num lock 
+    0,	// scroll lock 
+    0,	// home 
+    0,	// up arrow 
+    0,	// page up 
+    '-',
+    0,	// left arrow 
+    0,
+    0,	// right arrow 
+    '+',
+    0,	// end 
+    0,	// down arrow 
+    0,	// page down 
+    0,	// insert 
+    0,	// delete 
+    0,   0,   0,
+    0,	// F11 
+    0,	// F12 
+    0,	// All other keys are undefined
+
+};
+
+
 void keyboard_isr(struct InterruptStackFrame * stack){
-    char str[2]; 
-    str[0] = port_byte_read(KEYBOARD_DATA_READ);
-    str[1] = '\0'; 
-    print(str);
+
+    // read scancode 
+    unsigned char scancode = 0; 
+    scancode = port_byte_read(KEYBOARD_DATA_READ);
+
+    if(scancode & KEYBOARD_KEY_RELEASED) {
+        
+        // remove bit manually so we can easily determine char value 
+        scancode &= ~(KEYBOARD_KEY_RELEASED);
+
+        // TODO: handle release of special keys 
+        switch(scancode) {
+            default: 
+                break; 
+        }
+     } else {
+         // key was released, print it 
+         print("pressed");
+         print_char(Keyboard_US[scancode], -1, -1, 0);
+     }
 }
 
 void keyboard_setup() {

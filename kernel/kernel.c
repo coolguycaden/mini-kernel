@@ -17,8 +17,11 @@ int main() {
 	
     idt_setup();
     irq_setup();
-    keyboard_setup();
+    __asm__ __volatile__ ("sti");
     
+    pit_setup_rate_generator(10); 
+    timer_setup();
+    keyboard_setup();
 
     while(1) {
     
