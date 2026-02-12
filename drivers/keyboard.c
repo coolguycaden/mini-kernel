@@ -89,16 +89,17 @@ void keyboard_isr(struct InterruptStackFrame * stack){
 		// remove bit manually so we can easily determine char value 
 		scancode &= ~(KEYBOARD_KEY_RELEASED);
 
-		// TODO: handle release of special keys 
 		switch(scancode) {
 			
 			// left and right shift key 
+			// TODO: handle shift key press with other key
+			// 		 shift is a TOGGLE right now, as opposed to press-hold  
 			case 42: case 54:
 				keyboard_status.shift_key = ~keyboard_status.shift_key;
 				break; 
 
 			// caps lock 
-			case 48:
+			case 58:
 				keyboard_status.caps_lock = ~keyboard_status.caps_lock; 
 				break; 
 			
@@ -107,9 +108,11 @@ void keyboard_isr(struct InterruptStackFrame * stack){
 		}
 	} else {
 		unsigned char character = Keyboard_US[scancode];
+		
+		// capitalize letter if it is alphabetic and shift/caps on 
+		if(is_alpha(character) &
+				(keyboard_status.caps_lock | keyboard_status.shift_key)) {
 
-		// if caps lock or shift key, capitalize letter 
-		if(keyboard_status.caps_lock | keyboard_status.shift_key) {
 			// Dirty ASCII hack: subtract 32 from a lower case letter
 			// to get its upper case equivalent
 			character -= 32;
