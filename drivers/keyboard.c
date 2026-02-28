@@ -43,7 +43,7 @@ const unsigned char Keyboard_US[128] = {
     ' ', // space bar 
     0,	// caps lock 
     
-    // F1 - 59 
+    // F1 - F9 
     0,	0,   0,   0,   0,   0,   0,   0,   0,
     0,	// F10 
     0,	// num lock 
@@ -69,58 +69,123 @@ const unsigned char Keyboard_US[128] = {
 };
 
 
-unsigned char keyboard_is_special_char(unsigned char character) {
+// Certain scancodes (indexes to the above keyboard map)
+// should not print anything when pressed (such as shift) 
+const unsigned char Special_Scancodes [] = {
+	29, // ctrl 
+	42, // left shift 	
+	54, // right shift 
+	56, // alt 
 	
-	return 0;
+	// F1 - F12 
+	59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 87, 88,
+
+	69, 70
+};
+
+
+
+// If a scancodes key is NOT 0, then it is printable  
+unsigned char keyboard_is_printable(const unsigned scancode) {
+	
+	unsigned char character = Keyboard_US[scancode];
+	
+	// dirty hack for now
+	if(character) {
+		return 1; 
+	}
+
+	return 0; 
 }
 
-// steps for logic:
-// read scancode
-// if special character (! caps 
+// Certain key presses should do something special (i.e., 'shift' press should
+// capitalize letters or give alternate characters) 
+void keyboard_handle_special_key_press(const unsigned char scancode) {
+	
+	
+	switch(scancode) {
+		
+		// 42 / 54 are shifts, so set the status
+		case 42:
+		case 54:
+			keyboard_status.shift_key = 1;
+			break;
+
+		default:
+			break;
+
+	};
+
+}
+
+// In the name 
+void keyboard_handle_key_release(unsigned char scancode) {
+	
+	// KEYBOARD_KEY_RELEASED is set to 1 when key is released,
+	// so unset bit so we can easily determine char value 
+	scancode &= ~(KEYBOARD_KEY_RELEASED);
+
+	switch(scancode) {
+
+		// left and right shift key were released  
+		case 42: case 54:
+			keyboard_status.shift_key = 0;
+			break; 
+
+		// caps lock (pressing caps lock inverts its state) 
+		case 58:
+			keyboard_status.caps_lock = ~keyboard_status.caps_lock; 
+			break; 
+
+		// other special characters not considered now 
+		default: 
+			break; 
+	}
+}
+
+
+void keyboard_handle_key_press(const unsigned char scancode) {
+	unsigned char character = Keyboard_US[scancode];
+
+	if(keyboard_is_printable(scancode)) {
+		
+		if(is_alpha(character)) {
+			if(keyboard_status.caps_lock || keyboard_status.shift_key) {
+
+				// Dirty ASCII hack: subtract 32 from a lower case letter
+				// to get its upper case equivalent	
+				character -= 32; 
+			}
+		}
+
+		// Pass character, other args automatically get default
+		// configurations 
+		print_char(character, -1, -1, 0); 
+
+
+
+	} else {
+		
+		keyboard_handle_special_key_press(scancode);
+	}
+
+
+}
 
 void keyboard_isr(struct InterruptStackFrame * stack){
 
     // read scancode 
     unsigned char scancode = 0; 
     scancode = port_byte_read(KEYBOARD_DATA_READ);
-
+	
 	if(scancode & KEYBOARD_KEY_RELEASED) {
 
-		// remove bit manually so we can easily determine char value 
-		scancode &= ~(KEYBOARD_KEY_RELEASED);
-
-		switch(scancode) {
-			
-			// left and right shift key 
-			// TODO: handle shift key press with other key
-			// 		 shift is a TOGGLE right now, as opposed to press-hold  
-			case 42: case 54:
-				keyboard_status.shift_key = ~keyboard_status.shift_key;
-				break; 
-
-			// caps lock 
-			case 58:
-				keyboard_status.caps_lock = ~keyboard_status.caps_lock; 
-				break; 
-			
-			default: 
-				break; 
-		}
+		keyboard_handle_key_release(scancode);	
+	
 	} else {
-		unsigned char character = Keyboard_US[scancode];
-		
-		// capitalize letter if it is alphabetic and shift/caps on 
-		if(is_alpha(character) &
-				(keyboard_status.caps_lock | keyboard_status.shift_key)) {
 
-			// Dirty ASCII hack: subtract 32 from a lower case letter
-			// to get its upper case equivalent
-			character -= 32;
-		}
-
-
-		// key was released AND printable, print it 
-		print_char(character, -1, -1, 0);
+		keyboard_handle_key_press(scancode);	
+	
 	}
 }
 
